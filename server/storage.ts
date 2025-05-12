@@ -194,8 +194,8 @@ export class MemStorage implements IStorage {
         id: '1',
         createdAt: new Date(),
         updatedAt: new Date(),
-        name: 'Centro e região metropolitana',
-        zipCodes: ['65000000', '65010000', '65020000'],
+        name: 'Balsas - MA (Centro)',
+        zipCodes: ['65800000', '65800-000'],
         hasFiber: true,
         hasRadio: true,
         status: CoverageStatus.ACTIVE
@@ -204,8 +204,8 @@ export class MemStorage implements IStorage {
         id: '2',
         createdAt: new Date(),
         updatedAt: new Date(),
-        name: 'Zona rural até 40km da cidade',
-        zipCodes: ['65100000', '65110000'],
+        name: 'Zona rural de Balsas - até 40km da cidade',
+        zipCodes: ['65800100', '65800200'],
         hasFiber: false,
         hasRadio: true,
         status: CoverageStatus.ACTIVE
@@ -214,8 +214,8 @@ export class MemStorage implements IStorage {
         id: '3',
         createdAt: new Date(),
         updatedAt: new Date(),
-        name: 'Distritos e comunidades rurais',
-        zipCodes: ['65200000', '65210000'],
+        name: 'Distritos e comunidades rurais de Balsas',
+        zipCodes: ['65810000', '65820000'],
         hasFiber: false,
         hasRadio: true,
         status: CoverageStatus.ACTIVE

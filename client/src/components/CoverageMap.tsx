@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, MapPin } from 'lucide-react';
+import { Check, MapPin, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CoverageArea } from '@/lib/types';
@@ -11,13 +11,57 @@ interface CoverageMapProps {
 const CoverageMap = ({ areas }: CoverageMapProps) => {
   const [zipCode, setZipCode] = useState('');
   const [showResult, setShowResult] = useState(false);
+  const [isCovered, setIsCovered] = useState(false);
+  const [message, setMessage] = useState({
+    title: '',
+    text: ''
+  });
 
-  const handleCheck = () => {
-    if (zipCode.length >= 5) {
-      setShowResult(true);
-    } else {
-      alert('Por favor, informe um CEP válido');
+  // Formatar CEP ao digitar
+  const formatZipCode = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 8) {
+      let formatted = digits;
+      if (digits.length > 5) {
+        formatted = `${digits.slice(0, 5)}-${digits.slice(5)}`;
+      }
+      return formatted;
     }
+    return value;
+  };
+
+  // Lista de CEPs dentro da área de cobertura (baseada no requisito)
+  const coveredZipCodes = ['65800000', '65800-000'];
+  
+  const handleCheck = () => {
+    // Certifique-se de que temos um CEP para verificar
+    if (zipCode.length < 5) {
+      alert('Por favor, informe um CEP válido');
+      return;
+    }
+    
+    // Limpar o CEP para comparação (remover hífen)
+    const cleanedZip = zipCode.replace(/\D/g, '');
+    
+    // Verificar se o CEP está na lista de cobertos
+    const covered = coveredZipCodes.includes(cleanedZip) || 
+                   coveredZipCodes.includes(zipCode);
+    
+    setIsCovered(covered);
+    
+    if (covered) {
+      setMessage({
+        title: "Cobertura disponível!",
+        text: "Seu endereço em Balsas - MA está em nossa área de cobertura. Temos planos de fibra óptica disponíveis para você!"
+      });
+    } else {
+      setMessage({
+        title: "Área ainda não coberta",
+        text: "Infelizmente ainda não temos cobertura nesse CEP. Deixe seus dados que entraremos em contato quando nossa rede chegar até você."
+      });
+    }
+    
+    setShowResult(true);
   };
 
   return (
@@ -39,8 +83,12 @@ const CoverageMap = ({ areas }: CoverageMapProps) => {
               />
               
               <div className="absolute inset-0">
-                {/* Fiber Coverage */}
-                <div className="absolute top-[20%] left-[30%] w-[35%] h-[45%] bg-secondary/20 rounded-full border-2 border-secondary animate-pulse"></div>
+                {/* Fiber Coverage - Focado em Balsas-MA */}
+                <div className="absolute top-[20%] left-[30%] w-[35%] h-[45%] bg-secondary/20 rounded-full border-2 border-secondary animate-pulse">
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-bold text-lg text-shadow">
+                    Balsas-MA
+                  </div>
+                </div>
                 
                 {/* Radio Coverage */}
                 <div className="absolute top-[15%] left-[25%] w-[50%] h-[60%] bg-primary/20 rounded-full border-2 border-primary"></div>
@@ -69,9 +117,10 @@ const CoverageMap = ({ areas }: CoverageMapProps) => {
                 <Input
                   id="zipCode"
                   value={zipCode}
-                  onChange={(e) => setZipCode(e.target.value)}
-                  placeholder="Digite seu CEP"
+                  onChange={(e) => setZipCode(formatZipCode(e.target.value))}
+                  placeholder="Digite seu CEP (65800-000)"
                   className="px-4 py-3 border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary"
+                  maxLength={9}
                 />
               </div>
               
@@ -84,12 +133,16 @@ const CoverageMap = ({ areas }: CoverageMapProps) => {
               
               {/* Coverage Results */}
               {showResult && (
-                <div className="mt-4 p-4 rounded-md bg-green-50 border border-green-200">
+                <div className={`mt-4 p-4 rounded-md ${isCovered ? 'bg-green-50 border border-green-200' : 'bg-yellow-50 border border-yellow-200'}`}>
                   <div className="flex">
-                    <Check className="text-green-500 h-6 w-6 mr-3 mt-1" />
+                    {isCovered ? (
+                      <Check className="text-green-500 h-6 w-6 mr-3 mt-1" />
+                    ) : (
+                      <AlertCircle className="text-yellow-500 h-6 w-6 mr-3 mt-1" />
+                    )}
                     <div>
-                      <h4 className="font-semibold text-green-800">Cobertura disponível!</h4>
-                      <p className="text-green-700 mt-1">Seu endereço está em nossa área de cobertura. Temos planos de fibra disponíveis para você!</p>
+                      <h4 className={`font-semibold ${isCovered ? 'text-green-800' : 'text-yellow-800'}`}>{message.title}</h4>
+                      <p className={`mt-1 ${isCovered ? 'text-green-700' : 'text-yellow-700'}`}>{message.text}</p>
                       <a href="#lead-form" className="inline-block mt-3 text-accent hover:text-accent/80 font-medium">
                         Solicitar contato <span aria-hidden="true">→</span>
                       </a>
@@ -101,7 +154,11 @@ const CoverageMap = ({ areas }: CoverageMapProps) => {
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <h4 className="font-medium text-gray-800 mb-2">Áreas com cobertura:</h4>
                 <ul className="space-y-2 text-gray-600">
-                  {areas.slice(0, 3).map((area, index) => (
+                  <li className="flex items-start">
+                    <MapPin className="text-primary mt-1 mr-2 h-4 w-4" />
+                    <span>Balsas - MA (CEP 65800-000)</span>
+                  </li>
+                  {areas.slice(0, 2).map((area, index) => (
                     <li key={index} className="flex items-start">
                       <MapPin className="text-primary mt-1 mr-2 h-4 w-4" />
                       <span>{area.name}</span>
