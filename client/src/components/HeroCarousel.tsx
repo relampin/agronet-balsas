@@ -51,7 +51,10 @@ const HeroCarousel = ({ plans }: HeroCarouselProps) => {
             <div className={`absolute inset-0 bg-gradient-to-r ${getGradient(index)}`}></div>
             <div 
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url('${backgrounds[index % backgrounds.length]}')`, filter: 'brightness(0.7)' }}
+              style={{ 
+                backgroundImage: `url('${plan.bannerImage || backgrounds[index % backgrounds.length]}')`, 
+                filter: 'brightness(0.7)' 
+              }}
             ></div>
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="container mx-auto px-4 text-center">
