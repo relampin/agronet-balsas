@@ -147,7 +147,7 @@ export class MemStorage implements IStorage {
         ],
         isPopular: false,
         isActive: true,
-        bannerImage: null,
+        bannerImage: "https://upload.wikimedia.org/wikipedia/commons/0/02/Balsas_riobalsas.jpg",
         bannerOrder: 0
       },
       {
