@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Internet plans available
+model InternetPlan {
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  name        String
+  type        PlanType
+  speed       Int          // Speed in Mbps
+  price       Decimal      @db.Decimal(10, 2)
+  features    String[]
+  isPopular   Boolean      @default(false)
+  isActive    Boolean      @default(true)
+  leads       Lead[]       // Relation to leads
+  bannerImage String?      // URL to the banner image
+  bannerOrder Int?         // Order in the banner rotation (null if not in banner)
+}
+
+// Types of internet connection
+enum PlanType {
+  FIBRA
+  RADIO
+}
+
+// Leads captured from the form
+model Lead {
+  id           String       @id @default(cuid())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  name         String
+  phone        String
+  planId       String?      // Optional relation to the plan they were interested in
+  plan         InternetPlan? @relation(fields: [planId], references: [id], onDelete: SetNull)
+  source       String?      // Which page or campaign they came from
+  convertedAt  DateTime?    // When they became a customer
+  notes        String?      // Admin notes about this lead
+  contacted    Boolean      @default(false)
+  whatsappSent Boolean      @default(false)
+}
+
+// Coverage areas
+model CoverageArea {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String    // Name of city, neighborhood, etc.
+  zipCodes  String[]  // List of zip codes covered
+  hasFiber  Boolean   @default(false)
+  hasRadio  Boolean   @default(true)
+  status    CoverageStatus @default(ACTIVE)
+}
+
+enum CoverageStatus {
+  ACTIVE
+  PLANNED
+  UNAVAILABLE
+}
+
+// Testimonials from customers
+model Testimonial {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  location  String
+  comment   String   @db.Text
+  rating    Int      // 1-5 star rating
+  isActive  Boolean  @default(true)
+  imageUrl  String?  // Optional customer image
+}
+
+// FAQ items
+model FAQ {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  question  String
+  answer    String   @db.Text
+  category  String?  // Optional category for grouping
+  order     Int      @default(0) // For controlling display order
+  isActive  Boolean  @default(true)
+}
+
+// Site settings
+model SiteSetting {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  key       String   @unique
+  value     String   @db.Text
+}

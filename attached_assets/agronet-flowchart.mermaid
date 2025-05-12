@@ -1,0 +1,79 @@
+flowchart TD
+    Start([User visits AGRONET.TEC.BR]) --> LandingPage
+    
+    %% Main Landing Page Experience
+    LandingPage[Landing Page with Hero Banner] --> ViewBanner
+    LandingPage --> ScrollPage{User Action}
+    
+    %% Banner View & Interaction
+    ViewBanner[User Views Rotating Banner] --> Banner1
+    Banner1[Banner 1: FIBRA 300 MEGAS - R$99,90] --> Banner2
+    Banner2[Banner 2: FIBRA 400 MEGAS - R$119,90] --> Banner3
+    Banner3[Banner 3: RÁDIO 50 MEGAS - R$119,90] --> Banner1
+    
+    ViewBanner --> ClickCTA1{Click CTA on Banner?}
+    
+    %% Scrolling Journey
+    ScrollPage --> ViewPlans[View All Plans Section]
+    ScrollPage --> ViewBenefits[View Benefits Section]
+    ScrollPage --> ViewCoverage[View Coverage Map]
+    ScrollPage --> ViewTestimonials[View Testimonials]
+    
+    %% Secondary CTAs
+    ViewPlans --> ClickCTA2{Click CTA on Plans?}
+    ViewBenefits --> ClickCTA3{Click CTA on Benefits?}
+    ViewCoverage --> CheckCoverage[Check if Address is Covered]
+    CheckCoverage --> IsCovered{Is Address Covered?}
+    IsCovered -- Yes --> ClickCTA4{Click Coverage CTA?}
+    IsCovered -- No --> ShowAlternatives[Show Alternative Plans]
+    ShowAlternatives --> ClickCTA5{Click Alternative CTA?}
+    
+    %% Lead Form Entry Points
+    ClickCTA1 -- Yes --> LeadForm
+    ClickCTA2 -- Yes --> LeadForm
+    ClickCTA3 -- Yes --> LeadForm
+    ClickCTA4 -- Yes --> LeadForm
+    ClickCTA5 -- Yes --> LeadForm
+    
+    %% Lead Form Process
+    LeadForm[Lead Capture Form] --> FormFill[User Fills Form]
+    FormFill --> Validate{Form Validation}
+    
+    Validate -- Invalid --> ShowErrors[Show Form Errors]
+    ShowErrors --> FormFill
+    
+    Validate -- Valid --> SaveLead[Save Lead to Database]
+    SaveLead --> WhatsApp[Redirect to WhatsApp with Pre-filled Message]
+    
+    %% WhatsApp Journey
+    WhatsApp --> Consultant[Consultant Follows Up]
+    Consultant --> Sale{Completes Sale?}
+    
+    Sale -- Yes --> NewCustomer([New Customer Onboarding])
+    Sale -- No --> RetargetingCampaign([Add to Retargeting Campaign])
+    
+    %% Alternative Paths
+    ClickCTA1 -- No --> ContinueBrowsing1[Continue Browsing]
+    ClickCTA2 -- No --> ContinueBrowsing2[Continue Browsing]
+    ClickCTA3 -- No --> ContinueBrowsing3[Continue Browsing]
+    ClickCTA4 -- No --> ContinueBrowsing4[Continue Browsing]
+    ClickCTA5 -- No --> ContinueBrowsing5[Continue Browsing]
+    
+    ContinueBrowsing1 --> ScrollPage
+    ContinueBrowsing2 --> ScrollPage
+    ContinueBrowsing3 --> ScrollPage
+    ContinueBrowsing4 --> ScrollPage
+    ContinueBrowsing5 --> ScrollPage
+    
+    %% Styling
+    classDef banner fill:#f9f,stroke:#333,stroke-width:2px
+    classDef form fill:#bbf,stroke:#33f,stroke-width:2px
+    classDef success fill:#bfb,stroke:#3a3,stroke-width:2px
+    classDef failure fill:#fbb,stroke:#a33,stroke-width:2px
+    classDef action fill:#ffc,stroke:#aa3,stroke-width:2px
+    
+    class Banner1,Banner2,Banner3 banner
+    class LeadForm,FormFill,ShowErrors form
+    class NewCustomer success
+    class RetargetingCampaign failure
+    class ClickCTA1,ClickCTA2,ClickCTA3,ClickCTA4,ClickCTA5,IsCovered action
